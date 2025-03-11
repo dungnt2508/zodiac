@@ -10,3 +10,12 @@ Env3_11/
 __pycache__/
 *.pyc
 .DS_Store
+
+
+# Bỏ qua tệp cấu hình chứa thông tin nhạy cảm
+config.json
+.env
+QA.md
+reply_2.docx
+ABOUT_PROJECT.md
+prompt.md
