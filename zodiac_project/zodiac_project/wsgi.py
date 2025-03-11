@@ -1,16 +1,13 @@
-"""
-WSGI config for zodiac_project project.
-
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/5.1/howto/deployment/wsgi/
-"""
-
 import os
+import sys
+
+# Đường dẫn đến thư mục chứa dự án Django của bạn
+path = "/home/gsnake1102/zodiac"  # Thay "/home/gsnake1102/zodiac" bằng đường dẫn thực tế đến thư mục dự án của bạn
+if path not in sys.path:
+    sys.path.append(path)
+
+# Chỉ định tệp cấu hình settings của Django
+os.environ["DJANGO_SETTINGS_MODULE"] = "zodiac.zodiac_project.settings"  # Thay "zodiac.zodiac_project.settings" bằng tên tệp settings của bạn
 
 from django.core.wsgi import get_wsgi_application
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'zodiac_project.settings')
-
 application = get_wsgi_application()

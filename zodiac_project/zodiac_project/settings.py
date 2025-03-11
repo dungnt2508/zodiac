@@ -32,9 +32,13 @@ print(XAI_API_KEY)
 SECRET_KEY = 'django-insecure-0)-m+m+bv71-xy)@$&%slr7%^hqw+-!(ij2(rt-efxyrb+l3f5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'gsnake1102.pythonanywhere.com',
+    "*",
+    "127.0.0.1", "127.0.0.1:8000"
+]
 
 
 # Application definition
