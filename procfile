@@ -1,1 +1,0 @@
-web: gunicorn zodiac_project.wsgi --log-file -
