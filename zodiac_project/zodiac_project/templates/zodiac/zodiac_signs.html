@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+12 Con Giáp - Chi tiết vận mệnh
+{% endblock %}
+
+{% block content %}
+<section class="zodiac-signs">
+    <div class="zodiac-header">
+        <h1 class="neon-text">Khám phá 12 Con Giáp</h1>
+        <p>Thông tin chi tiết về tính cách, vận mệnh, và tương hợp của từng con giáp.</p>
+    </div>
+
+    <div class="zodiac-grid">
+        {% for sign in zodiac_signs %}
+        <div class="zodiac-card">
+            <h3>{{ sign.name }}</h3>
+            <p>{{ sign.description }}</p>
+            <p><strong>Tương hợp:</strong> {{ sign.compatibility }}</p>
+            <p><strong>Vận mệnh 2025:</strong> {{ sign.fortune_2025 }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Trang chủ - 12 Con Giáp
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1 class="neon-text">Vận mệnh năm Rắn Vàng 2025</h1>
+        <p>Nhập thông tin để khám phá vận mệnh và phong thủy của bạn!</p>
+        <div class="zodiac-form glass-effect">
+            <div class="form-group">
+                <label for="userName">Họ tên của bạn:</label>
+                <input type="text" id="userName" placeholder="..." required>
+            </div>
+            <div class="form-group date-time-group">
+                <label for="datetime">Chọn ngày và giờ:</label>
+                <input type="text" id="datetime" placeholder="..." required>
+            </div>
+            <div class="form-group button-group">
+                <button id="exploreBtn" class="btn-interact">Khám phá</button>
+            </div>
+        </div>
+        <div id="zodiacResult" class="zodiac-result pop-up"></div>
+        <div id="aiAssistant" class="ai-assistant pop-up" style="display: none; margin-top: 20px;"></div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="feature-card">
+        <h3 class="text-3d">Con giáp hôm nay</h3>
+        <p>Tuổi Tỵ: Cơ hội tài lộc đang đến.</p>
+    </div>
+    <div class="feature-card">
+        <h3 class="text-3d">Bài viết nổi bật</h3>
+        <p><a href="{% url 'zodiac:info' %}">Rắn Vàng 2025: Điều gì chờ đợi?</a></p>
+    </div>
+    <div class="feature-card">
+        <h3 class="text-3d">Dự đoán vận mệnh</h3>
+        <p><a href="{% url 'zodiac:predict' %}">Xem vận mệnh chi tiết của bạn!</a></p>
+    </div>
+</section>
+{% endblock %}

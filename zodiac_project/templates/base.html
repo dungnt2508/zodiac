@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Khám phá vận mệnh và phong thủy với 12 Con Giáp">
+    <meta name="keywords" content="12 con giáp, tử vi, phong thủy, vận mệnh">
+    <meta name="author" content="Your Name">
+    <title>{% block title %}12 Con Giáp{% endblock %}</title>
+
+    {% load static %}
+    <link rel="icon" href="{% static 'assets/imgs/snake-gold.png' %}" type="image/png">
+    <link rel="stylesheet" href="{% static 'assets/css/main.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto:wght@400;500&family=Bebas+Neue&display=swap" rel="stylesheet">
+        <!-- Thêm Flatpickr CDN trong <head> hoặc trước </body> trong base.html -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <!-- Trong base.html -->
+
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <a href="{% url 'home:home_page' %}" class="nav-item">
+            <img src="{% static 'assets/imgs/snake-gold.png' %}" alt="Snake Logo" class="snake-logo" />
+            </a>
+        </div>
+        <nav class="nav-container">
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="{% url 'home:home_page' %}" class="nav-item">Trang chủ</a></li>
+                <li><a href="{% url 'zodiac:info' %}" class="nav-item">12 Con Giáp</a></li>
+                <li><a href="{% url 'zodiac:predict' %}" class="nav-item">Dự đoán</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>© 2025 - 12 Con Giáp. Thiết kế với <span class="heart">♥</span> bởi gsnake1102.</p>
+    </footer>
+
+    <script src="{% static 'assets/js/script.js' %}"></script>
+</body>
+</html>
