@@ -201,6 +201,7 @@ body::after {
     font-weight: 500;
 }
 
+
 /* Zodiac Form */
 .zodiac-form {
     display: flex;
@@ -292,12 +293,13 @@ body::after {
 }
 
 .zodiac-result {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 40px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 36px;
     color: #d4af37;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     margin-top: 30px;
+    text-align: center;
     opacity: 0;
     transform: scale(0.9);
     animation: popIn 0.5s ease forwards;

@@ -14,7 +14,12 @@
 
     <div class="zodiac-grid">
         {% for sign in zodiac_signs %}
-        <div class="zodiac-card">
+        <div class="zodiac-card" data-code="{{ sign.code }}"
+                                data-name="{{ sign.name }}"
+                                data-description="{{ sign.description }}"
+                                data-compatibility="{{ sign.compatibility }}"
+                                data-fortune_2025="{{ sign.fortune_2025 }}"
+                                data-fortune_today="{{ sign.fortune_today }}">
             <h3>{{ sign.name }}</h3>
             <p>{{ sign.description }}</p>
             <p><strong>Tương hợp:</strong> {{ sign.compatibility }}</p>
@@ -23,4 +28,135 @@
         {% endfor %}
     </div>
 </section>
+
+<!-- Popup -->
+<div id="overlay" class="overlay"></div>
+<div id="popup" class="popup-container">
+    <div class="popup-content">
+        <span class="close-btn" onclick="closePopup()">&times;</span>
+        <h2 id="popup-title"></h2>
+        <p id="popup-description"></p>
+        <p><strong>Code:</strong> <span id="popup-code"></span></p>
+        <p><strong>Tương hợp:</strong> <span id="popup-compatibility"></span></p>
+        <p><strong>Vận mệnh 2025:</strong> <span id="popup-fortune-2025"></span></p>
+        <p><strong>Vận mệnh hôm nay:</strong> <span id="popup-fortune-day"></span></p>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    let zodiacCards = document.querySelectorAll(".zodiac-card");
+
+    zodiacCards.forEach(card => {
+        card.addEventListener("click", function() {
+            let code = this.getAttribute("data-code");
+            let name = this.getAttribute("data-name");
+            let description = this.getAttribute("data-description");
+            let compatibility = this.getAttribute("data-compatibility");
+            let fortune_2025 = this.getAttribute("data-fortune_2025");
+            let fortune_today = this.getAttribute("data-fortune_today");
+
+            openPopup(code, name, description, compatibility, fortune_2025, fortune_today);
+        });
+    });
+});
+
+function openPopup(code, name, description, compatibility, fortune_2025, fortune_today) {
+    document.getElementById("popup-code").innerText = code;
+    document.getElementById("popup-title").innerText = name;
+    document.getElementById("popup-description").innerText = description;
+    document.getElementById("popup-compatibility").innerText = compatibility;
+    document.getElementById("popup-fortune-2025").innerText = fortune_2025;
+
+    let fortuneTodayEl = document.getElementById("popup-fortune-day");
+
+    if (fortuneTodayEl) {
+        // Dùng innerText thay vì innerHTML để tránh lỗi XSS
+        fortuneTodayEl.innerText = fortune_today;
+    } else {
+        console.error("popup-fortune-day không tồn tại!");
+    }
+
+    let popup = document.getElementById("popup");
+    let overlay = document.getElementById("overlay");
+
+    popup.style.display = "flex";
+    overlay.style.display = "block";
+    document.body.style.overflow = "hidden";
+}
+
+function closePopup() {
+    document.getElementById("popup").style.display = "none";
+    document.getElementById("overlay").style.display = "none";
+    document.body.style.overflow = "auto";
+}
+
+</script>
+<style>
+    * Overlay làm mờ nền */
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.7);
+        display: none;
+        z-index: 999;
+    }
+
+    .popup-container {
+        display: none;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
+        max-width: 600px; /* Tăng chiều rộng */
+        background: rgba(47, 47, 47, 0.95);
+        padding: 30px;
+        border-radius: 15px;
+        color: #fff;
+        box-shadow: 0 10px 30px rgba(212, 175, 55, 0.5);
+        z-index: 1000;
+        backdrop-filter: blur(10px);
+    }
+
+    .popup-content {
+        max-height: 75vh; /* Tăng chiều cao */
+        overflow-y: auto; /* Bật cuộn nếu nội dung dài */
+        word-wrap: break-word;
+        padding: 20px;
+    }
+
+    /* Đảm bảo chữ không bị tràn ngang */
+    .popup-content p {
+        word-break: break-word;
+        overflow-wrap: break-word;
+        max-width: 100%;
+        white-space: pre-wrap; /* Giữ nguyên khoảng trắng và xuống dòng */
+    }
+
+    /* Responsive cho màn hình nhỏ */
+    @media (max-width: 768px) {
+        .popup-container {
+            width: 95%;
+            padding: 20px;
+        }
+    }
+
+
+    /* Nút đóng popup */
+    .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 24px;
+        cursor: pointer;
+        color: #d4af37;
+    }
+</style>
+
 {% endblock %}

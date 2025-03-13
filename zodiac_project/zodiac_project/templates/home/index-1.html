@@ -16,9 +16,13 @@ Trang chủ - 12 Con Giáp
                 <label for="userName">Họ tên của bạn:</label>
                 <input type="text" id="userName" placeholder="..." required>
             </div>
-            <div class="form-group date-time-group">
-                <label for="datetime">Chọn ngày và giờ:</label>
-                <input type="text" id="datetime" placeholder="..." required>
+            <div class="form-group">
+                <label for="birthdate">Chọn ngày sinh:</label>
+                <input type="date" id="birthdate" required>
+            </div>
+            <div class="form-group">
+                <label for="birthtime">Chọn giờ sinh:</label>
+                <input type="time" id="birthtime" required>
             </div>
             <div class="form-group button-group">
                 <button id="exploreBtn" class="btn-interact">Khám phá</button>
@@ -30,9 +34,9 @@ Trang chủ - 12 Con Giáp
 </section>
 
 <section class="features">
-    <div class="feature-card">
+    <div class="feature-card" id="lucky-zodiac-card" onclick="getLuckyZodiac()">
         <h3 class="text-3d">Con giáp hôm nay</h3>
-        <p>Tuổi Tỵ: Cơ hội tài lộc đang đến.</p>
+        <p><a id="lucky-zodiac-description">Vui lòng chờ...</a></p>
     </div>
     <div class="feature-card">
         <h3 class="text-3d">Bài viết nổi bật</h3>
@@ -43,4 +47,215 @@ Trang chủ - 12 Con Giáp
         <p><a href="{% url 'zodiac:predict' %}">Xem vận mệnh chi tiết của bạn!</a></p>
     </div>
 </section>
+
+<!-- Thêm popup vào home -->
+<div id="overlay" class="overlay"></div>
+<div id="popup" class="popup-container">
+    <div class="popup-content">
+        <span class="close-btn" onclick="closePopup()">&times;</span>
+        <h2 id="popup-title"></h2>
+        <p id="popup-description"></p>
+        <p><strong>Tương hợp:</strong> <span id="popup-compatibility"></span></p>
+        <p><strong>Vận mệnh hôm nay:</strong> <span id="popup-fortune"></span></p>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    fetch("/latest_lucky_zodiac/")
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            console.error(data.error);
+            document.getElementById("lucky-zodiac-description").innerText = "Không có dữ liệu";
+            return;
+        }
+
+        // Cập nhật nội dung thẻ feature-card
+        document.getElementById("lucky-zodiac-description").innerText = "Tuổi " + data.name_vn + ": " + data.fortune_2025;
+    })
+    .catch(error => console.error("Lỗi khi tải con giáp may mắn:", error));
+
+
+});
+
+// Trang chủ: Tính con giáp và gọi trợ lý ảo
+    const zodiacs = [
+        "Tý (Chuột)", "Sửu (Trâu)", "Dần (Hổ)", "Mão (Mèo)",
+        "Thìn (Rồng)", "Tỵ (Rắn)", "Ngọ (Ngựa)", "Mùi (Dê)",
+        "Thân (Khỉ)", "Dậu (Gà)", "Tuất (Chó)", "Hợi (Lợn)"
+    ];
+
+    const exploreBtn = document.getElementById('exploreBtn');
+    if (exploreBtn) {
+        const userNameInput = document.getElementById('userName');
+        const birthdateInput = document.getElementById('birthdate');
+        const birthtimeInput = document.getElementById('birthtime');
+        const resultDiv = document.getElementById('zodiacResult');
+        const aiAssistantDiv = document.getElementById('aiAssistant');
+
+        exploreBtn.addEventListener('click', () => {
+            const userName = userNameInput.value.trim();
+            const birthdate = birthdateInput.value;
+            const birthtime = birthtimeInput.value;
+
+            if (!userName || !birthdate || !birthtime) {
+                resultDiv.textContent = 'Vui lòng nhập tên, ngày và giờ sinh!';
+                resultDiv.style.color = '#ff6b6b';
+                resultDiv.classList.add('pop-up');
+                aiAssistantDiv.style.display = 'none';
+                return;
+            }
+
+            const [year, month, day] = birthdate.split('-').map(Number);
+            const [hour, minute] = birthtime.split(':').map(Number);
+
+            const maxDays = getMaxDaysInMonth(month, year);
+            if (day < 1 || day > maxDays || month < 1 || month > 12 || year < 1900 || year > 2025 ||
+                hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+                resultDiv.textContent = `Thông tin không hợp lệ! (Tháng ${month} chỉ có tối đa ${maxDays} ngày)`;
+                resultDiv.style.color = '#ff6b6b';
+                resultDiv.classList.add('pop-up');
+                aiAssistantDiv.style.display = 'none';
+                return;
+            }
+
+            const zodiacIndex = (year - 1900) % 12;
+            const zodiac = zodiacs[zodiacIndex];
+            resultDiv.textContent = `${userName}, con giáp của bạn là: ${zodiac}`;
+            resultDiv.classList.add('pop-up');
+
+            callVirtualAssistant(userName, zodiac, year, month, day, hour, minute);
+        });
+
+        function getMaxDaysInMonth(month, year) {
+            const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            if (month === 2 && isLeapYear(year)) return 29;
+            return daysInMonth[month - 1];
+        }
+
+        function isLeapYear(year) {
+            return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+        }
+
+        function callVirtualAssistant(userName, zodiac, year, month, day, hour, minute) {
+            aiAssistantDiv.style.display = 'block';
+            aiAssistantDiv.innerHTML = `
+                <p><strong>Trợ lý ảo:</strong> Chào ${userName}! Dựa trên thông tin bạn cung cấp (${day}/${month}/${year} ${hour}:${minute}), tôi có một số gợi ý phong thủy:</p>
+                <p>- Con giáp: ${zodiac}</p>
+                <p>- Hướng tốt: ${getLuckyDirection(zodiac)}</p>
+                <p>- Màu sắc may mắn: ${getLuckyColor(zodiac)}</p>
+                <p>- Lời khuyên: Hãy giữ tinh thần tích cực và tránh tranh cãi vào giờ ${hour} hôm nay!</p>
+            `;
+        }
+
+        function getLuckyDirection(zodiac) {
+            const directions = ['Đông', 'Tây', 'Nam', 'Bắc', 'Đông Nam'];
+            return directions[Math.floor(Math.random() * directions.length)];
+        }
+
+        function getLuckyColor(zodiac) {
+            const colors = ['Vàng', 'Đỏ', 'Xanh lá', 'Trắng', 'Đen'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+    }
+
+function getLuckyZodiac() {
+    fetch("/latest_lucky_zodiac/")
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            console.error(data.error);
+            return;
+        }
+
+        document.getElementById("popup-title").innerText = data.name;
+        document.getElementById("popup-description").innerText = data.description;
+        document.getElementById("popup-compatibility").innerText = data.compatibility;
+        document.getElementById("popup-fortune").innerText = data.fortune_today;
+
+        let popup = document.getElementById("popup");
+        let overlay = document.getElementById("overlay");
+
+        popup.style.display = "flex";
+        overlay.style.display = "block";
+        document.body.style.overflow = "hidden";
+    })
+    .catch(error => console.error("Lỗi khi lấy dữ liệu con giáp may mắn:", error));
+}
+
+function closePopup() {
+    document.getElementById("popup").style.display = "none";
+    document.getElementById("overlay").style.display = "none";
+    document.body.style.overflow = "auto";
+}
+</script>
+
+<style>
+    * Overlay làm mờ nền */
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.7);
+        display: none;
+        z-index: 999;
+    }
+
+    .popup-container {
+        display: none;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
+        max-width: 600px; /* Tăng chiều rộng */
+        background: rgba(47, 47, 47, 0.95);
+        padding: 30px;
+        border-radius: 15px;
+        color: #fff;
+        box-shadow: 0 10px 30px rgba(212, 175, 55, 0.5);
+        z-index: 1000;
+        backdrop-filter: blur(10px);
+    }
+
+    .popup-content {
+        max-height: 75vh; /* Tăng chiều cao */
+        overflow-y: auto; /* Bật cuộn nếu nội dung dài */
+        word-wrap: break-word;
+        padding: 20px;
+    }
+
+    /* Đảm bảo chữ không bị tràn ngang */
+    .popup-content p {
+        word-break: break-word;
+        overflow-wrap: break-word;
+        max-width: 100%;
+        white-space: pre-wrap; /* Giữ nguyên khoảng trắng và xuống dòng */
+    }
+
+    /* Responsive cho màn hình nhỏ */
+    @media (max-width: 768px) {
+        .popup-container {
+            width: 95%;
+            padding: 20px;
+        }
+    }
+
+
+    /* Nút đóng popup */
+    .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 24px;
+        cursor: pointer;
+        color: #d4af37;
+    }
+
+</style>
 {% endblock %}

@@ -2,39 +2,36 @@ from django.shortcuts import render
 from .models import DailyPrediction
 from django.utils import timezone
 import random
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from .models import ZodiacSign  # Đảm bảo bạn có model ZodiacSign lưu dữ liệu
 
 
 def zodiac_info(request):
-    """trang info 12 con giáp"""
+    """lấy thông tin 12 con giáp mới nhất hằng ngày"""
     # Dữ liệu tĩnh (sau này có thể dùng database)
-    zodiac_signs = [
-        {"name": "Tý (Chuột)", "description": "Thông minh, nhanh nhẹn, thích nghi tốt.", "compatibility": "Thìn, Thân",
-         "fortune_2025": "Tài lộc dồi dào."},
-        {"name": "Sửu (Trâu)", "description": "Chăm chỉ, kiên nhẫn, đáng tin cậy.", "compatibility": "Tỵ, Dậu",
-         "fortune_2025": "Công việc ổn định."},
-        {"name": "Dần (Hổ)", "description": "Dũng cảm, tự tin, thích lãnh đạo.", "compatibility": "Ngọ, Tuất",
-         "fortune_2025": "Sự nghiệp thăng hoa."},
-        {"name": "Mão (Mèo)", "description": "Dịu dàng, tinh tế, yêu hòa bình.", "compatibility": "Mùi, Hợi",
-         "fortune_2025": "Gia đạo bình an."},
-        {"name": "Thìn (Rồng)", "description": "Quyền lực, sáng tạo, đầy tham vọng.", "compatibility": "Tý, Thân",
-         "fortune_2025": "Cơ hội lớn."},
-        {"name": "Tỵ (Rắn)", "description": "Bí ẩn, thông thái, quyến rũ.", "compatibility": "Sửu, Dậu",
-         "fortune_2025": "Đột phá lớn."},
-        {"name": "Ngọ (Ngựa)", "description": "Tự do, năng động, yêu khám phá.", "compatibility": "Dần, Tuất",
-         "fortune_2025": "Sự nghiệp thăng tiến."},
-        {"name": "Mùi (Dê)", "description": "Hiền lành, nghệ thuật, yêu thiên nhiên.", "compatibility": "Mão, Hợi",
-         "fortune_2025": "Gia đạo hạnh phúc."},
-        {"name": "Thân (Khỉ)", "description": "Linh hoạt, thông minh, hài hước.", "compatibility": "Tý, Thìn",
-         "fortune_2025": "Cẩn trọng đầu tư."},
-        {"name": "Dậu (Gà)", "description": "Cần cù, tổ chức tốt, yêu cái đẹp.", "compatibility": "Sửu, Tỵ",
-         "fortune_2025": "Công việc thuận lợi."},
-        {"name": "Tuất (Chó)", "description": "Trung thành, chính trực, bảo vệ.", "compatibility": "Dần, Ngọ",
-         "fortune_2025": "Tài lộc tăng."},
-        {"name": "Hợi (Lợn)", "description": "Chân thành, rộng lượng, yêu đời.", "compatibility": "Mão, Mùi",
-         "fortune_2025": "Năm bình yên."},
-    ]
+    zodiac_signs = ZodiacSign.objects.all()[:12]  # Lấy 12 record mới nhất
     return render(request, 'zodiac/zodiac_signs.html', {'zodiac_signs': zodiac_signs})
 
+
+def latest_lucky_zodiac(request):
+    zodiac = ZodiacSign.objects.filter(luckyofday="1").order_by("-timecreated").first()  # Lấy record mới nhất
+
+    if not zodiac:
+        return JsonResponse({"error": "Không tìm thấy con giáp may mắn."}, status=404)
+
+    return JsonResponse({
+        "id": zodiac.id,
+        "code": zodiac.code,
+        "name": zodiac.name,
+        "name_vn": zodiac.name_vn,
+        "description": zodiac.description,
+        "compatibility": zodiac.compatibility,
+        "fortune_2025": zodiac.fortune_2025,
+        "fortune_today": zodiac.fortune_today,
+        "luckyofday": zodiac.luckyofday,
+        "timecreated": zodiac.timecreated.strftime("%Y-%m-%d %H:%M:%S"),
+    })
 
 def zodiac_predict(request):
     """trang dự đoán"""
